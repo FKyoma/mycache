@@ -19,7 +19,6 @@ type Getter interface {
 
 type GetterFunc func(key string) ([]byte, error)
 
-
 func (f GetterFunc) Get(key string) ([]byte, error) {
 	return f(key)
 }
@@ -46,8 +45,8 @@ func NewGroup(name string, cacheBytes int64, getter Getter) *Group {
 	return g
 }
 
-// GetGroup returns the named group previously created with NewGroup, or
-// nil if there's no such group.
+// GetGroup返回NewGroup创建的命名组，如果没有这个组，返回nil
+
 func GetGroup(name string) *Group {
 	mu.RLock()
 	g := groups[name]
