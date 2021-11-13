@@ -6,7 +6,6 @@ import (
 	"sync"
 )
 
-// A Group is a cache namespace and associated data loaded spread over
 type Group struct {
 	name      string
 	getter    Getter
@@ -14,15 +13,12 @@ type Group struct {
 	peers     PeerPicker
 }
 
-// A Getter loads data for a key.
 type Getter interface {
 	Get(key string) ([]byte, error)
 }
 
-// A GetterFunc implements Getter with a function.
 type GetterFunc func(key string) ([]byte, error)
 
-// Get implements Getter interface function
 func (f GetterFunc) Get(key string) ([]byte, error) {
 	return f(key)
 }
@@ -32,7 +28,6 @@ var (
 	groups = make(map[string]*Group)
 )
 
-// NewGroup create a new instance of Group
 func NewGroup(name string, cacheBytes int64, getter Getter) *Group {
 	if getter == nil {
 		panic("nil Getter")
@@ -48,8 +43,6 @@ func NewGroup(name string, cacheBytes int64, getter Getter) *Group {
 	return g
 }
 
-// GetGroup returns the named group previously created with NewGroup, or
-// nil if there's no such group.
 func GetGroup(name string) *Group {
 	mu.RLock()
 	g := groups[name]
@@ -57,7 +50,6 @@ func GetGroup(name string) *Group {
 	return g
 }
 
-// Get value for a key from cache
 func (g *Group) Get(key string) (ByteView, error) {
 	if key == "" {
 		return ByteView{}, fmt.Errorf("key is required")
@@ -71,7 +63,6 @@ func (g *Group) Get(key string) (ByteView, error) {
 	return g.load(key)
 }
 
-// RegisterPeers registers a PeerPicker for choosing remote peer
 func (g *Group) RegisterPeers(peers PeerPicker) {
 	if g.peers != nil {
 		panic("RegisterPeerPicker called more than once")

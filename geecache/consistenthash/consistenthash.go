@@ -6,18 +6,15 @@ import (
 	"strconv"
 )
 
-// Hash maps bytes to uint32
 type Hash func(data []byte) uint32
 
-// Map constains all hashed keys
 type Map struct {
 	hash     Hash
 	replicas int
-	keys     []int // Sorted
+	keys     []int
 	hashMap  map[int]string
 }
 
-// New creates a Map instance
 func New(replicas int, fn Hash) *Map {
 	m := &Map{
 		replicas: replicas,
@@ -30,7 +27,6 @@ func New(replicas int, fn Hash) *Map {
 	return m
 }
 
-// Add adds some keys to the hash.
 func (m *Map) Add(keys ...string) {
 	for _, key := range keys {
 		for i := 0; i < m.replicas; i++ {
@@ -48,7 +44,7 @@ func (m *Map) Get(key string) string {
 	}
 
 	hash := int(m.hash([]byte(key)))
-	// Binary search for appropriate replica.
+
 	idx := sort.Search(len(m.keys), func(i int) bool {
 		return m.keys[i] >= hash
 	})

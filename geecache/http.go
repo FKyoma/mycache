@@ -16,15 +16,13 @@ const (
 	defaultReplicas = 50
 )
 
-// HTTPPool implements PeerPicker for a pool of HTTP peers.
-
 type HTTPPool struct {
-	// this peer's base URL, e.g. "https://example.net:8000"
+	// "https://example.net:8000"
 	self        string
 	basePath    string
-	mu          sync.Mutex // guards peers and httpGetters
+	mu          sync.Mutex
 	peers       *consistenthash.Map
-	httpGetters map[string]*httpGetter // keyed by e.g. "http://10.0.0.2:8008"
+	httpGetters map[string]*httpGetter //"http://10.0.0.2:8008"
 }
 
 type httpGetter struct {
@@ -106,7 +104,6 @@ func (h *httpGetter) Get(group string, key string) ([]byte, error) {
 
 var _ PeerGetter = (*httpGetter)(nil)
 
-// Set updates the pool's list of peers.
 func (p *HTTPPool) Set(peers ...string) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -118,7 +115,6 @@ func (p *HTTPPool) Set(peers ...string) {
 	}
 }
 
-// PickPeer picks a peer according to key
 func (p *HTTPPool) PickPeer(key string) (PeerGetter, bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
